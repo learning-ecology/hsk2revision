@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HSK 2 Pinyin Practice</title>
+<style>
+:root{--bg:#faf8f4;--card:#fff;--ink:#222;--mut:#6b6b6b;--line:#e2ddd2;--acc:#b3261e;--ok:#1e7b3a;--okbg:#e6f4ea;--bad:#b3261e;--badbg:#fdeceb}
+@media(prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#181715;--card:#232120;--ink:#eee;--mut:#a09a90;--line:#3a3733;--acc:#ef7b72;--ok:#7bd491;--okbg:#1d3326;--bad:#f2928b;--badbg:#3a2220}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:1.4rem;margin:0 0 4px}
+.tip{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:.9rem;color:var(--mut);margin:10px 0 16px}
+.tip b{color:var(--ink)}
+.bar{height:8px;background:var(--line);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--acc);width:0;transition:width .3s}
+.meta{display:flex;justify-content:space-between;font-size:.9rem;color:var(--mut);margin:6px 0 14px}
+.row{display:grid;grid-template-columns:2.2rem 6.5rem 1fr 1fr;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.row.ok{background:var(--okbg);border-color:var(--ok)}.row.bad{background:var(--badbg);border-color:var(--bad)}
+.n{color:var(--mut);font-size:.85rem}
+.hz{font:600 1.6rem/1.2 "Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif}
+.vi{font-size:.9rem;color:var(--mut)}
+input{width:100%;font:inherit;font-size:1.05rem;padding:8px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink)}
+input:focus{outline:2px solid var(--acc);border-color:transparent}
+input:disabled{opacity:1;color:var(--ok);font-weight:600;background:transparent;border-color:transparent}
+.ans{grid-column:3/5;font-size:.85rem;color:var(--bad)}
+.show{background:none;border:none;color:var(--acc);text-decoration:underline;cursor:pointer;font:inherit;padding:0}
+.actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:14px}
+button.p{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:11px 20px;font-weight:600;font-size:1rem;font-family:inherit;cursor:pointer}
+button.p:disabled{opacity:.4;cursor:default}
+.msg{font-weight:600}.msg.ok{color:var(--ok)}.msg.bad{color:var(--bad)}
+.choice{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.choice button{text-align:left;padding:16px;font-size:1.05rem}.choice span{display:block;font-size:1.4rem}.choice small{display:block;font-weight:400;font-size:.85rem;opacity:.9;margin-top:4px}
+@media(max-width:560px){.choice{grid-template-columns:1fr}}
+.end{text-align:center;padding:30px 10px}.end h2{font-size:1.6rem}
+@media(max-width:560px){.row{grid-template-columns:1.8rem 1fr;}.row .vi{grid-column:2}.row input{grid-column:1/3}.ans{grid-column:1/3}}
+</style></head><body><main>
+<h1>HSK 2 Pinyin Practice <span style="font-weight:400;color:var(--mut)">拼音练习</span></h1>
+<div class="tip">Type the pinyin with <b>tone numbers</b> after each syllable: 今天 → <b>jin1tian1</b>. Neutral tone: no number (or 5), e.g. 谢谢 → <b>xie4xie</b>. ü → <b>v</b> (女 → <b>nv3</b>). 儿 endings: <b>hair2</b>. Spaces don’t matter.</div>
+<div id="start"><h2 style="font-size:1.15rem">Choose your order</h2>
+<div class="choice"><button class="p" data-mode="alpha"><span>A–Z</span> Alphabetical<small>Follows the vocabulary list, section by section</small></button>
+<button class="p" data-mode="random"><span>🔀</span> Random<small>All 210 words shuffled into new sections each time</small></button></div></div>
+<div id="practice" hidden>
+<div class="bar"><i id="bar"></i></div>
+<div class="meta"><span id="sec"></span><span id="cnt"></span></div>
+<div id="list"></div>
+<div class="actions"><button class="p" id="check">Check answers</button><button class="p" id="next" hidden>Next section →</button><span class="msg" id="msg"></span></div>
+<div id="end" class="end" hidden></div>
+</div>
+</main>
+<script>
+const DATA=[["啊", "a", "trợ từ ngữ khí (à, nhé, ạ)"], ["爱好", "ai4hao4", "sở thích"], ["爱情片", "ai4qing2pian4", "phim tình cảm"], ["白色", "bai2se4", "màu trắng"], ["班", "ban1", "lớp"], ["帮", "bang1", "giúp"], ["帮忙", "bang1mang2", "giúp đỡ"], ["包", "bao1", "túi, cặp"], ["本子", "ben3zi", "quyển vở"], ["比", "bi3", "so với; so sánh"], ["笔", "bi3", "bút"], ["别", "bie2", "đừng"], ["不错", "bu2cuo4", "không tệ, khá tốt"], ["不好意思", "bu4hao3yi4si", "xin lỗi; ngại quá"], ["长", "chang2", "dài"], ["车站", "che1zhan4", "bến xe, trạm xe"], ["出国", "chu1guo2", "ra nước ngoài"], ["出门", "chu1men2", "ra ngoài, ra khỏi nhà"], ["出去", "chu1qu4", "đi ra"], ["床", "chuang2", "giường"], ["词", "ci2", "từ"], ["次", "ci4", "lần"], ["从", "cong2", "từ"], ["从小", "cong2xiao3", "từ nhỏ"], ["错", "cuo4", "sai"], ["打", "da3", "đánh; chơi (bóng...)"], ["打车", "da3che1", "đi taxi, bắt xe"], ["打开", "da3kai1", "mở ra"], ["但", "dan4", "nhưng"], ["但是", "dan4shi4", "nhưng, tuy nhiên"], ["蛋糕", "dang4ao1", "bánh ngọt, bánh kem"], ["地", "de", "trợ từ kết cấu (đứng sau trạng ngữ)"], ["得", "de", "trợ từ bổ ngữ (đứng sau động từ/tính từ)"], ["等", "deng3", "đợi, chờ"], ["地铁", "di4tie3", "tàu điện ngầm"], ["点", "dian3", "giờ (thời gian); gọi (món); chút"], ["懂", "dong3", "hiểu"], ["动", "dong4", "động, cử động"], ["饭馆", "fang4uan3", "quán ăn, nhà hàng"], ["房子", "fang2zi", "căn nhà"], ["飞", "fei1", "bay"], ["高", "gao1", "cao"], ["高中", "gao1zhong1", "trung học phổ thông"], ["告诉", "gao4su", "nói cho (ai) biết"], ["个子", "ge4zi", "vóc dáng, chiều cao"], ["给", "gei3", "cho; đưa cho"], ["跟", "gen1", "với, cùng"], ["更", "geng4", "càng, hơn nữa"], ["公交车", "gong1jiao1che1", "xe buýt"], ["过", "guo4", "qua; trải qua; đón (lễ, Tết)"], ["过来", "guo4lai2", "đi qua đây, lại đây"], ["过年", "guo4nian2", "ăn Tết, đón năm mới"], ["过去", "guo4qu4", "đi qua đó; quá khứ"], ["过", "guo", "trợ từ chỉ kinh nghiệm (đã từng)"], ["还是", "hai2shi", "hay là; vẫn"], ["好", "hao3", "tốt, khỏe"], ["好像", "hao3xiang4", "hình như, dường như"], ["黑色", "hei1se4", "màu đen"], ["红色", "hong2se4", "màu đỏ"], ["后面", "hou4mian4", "phía sau"], ["花", "hua1", "tiêu, tốn (tiền, thời gian); hoa"], ["画", "hua4", "vẽ; bức tranh"], ["画笔", "hua4bi3", "bút vẽ"], ["坏", "huai4", "hỏng; xấu"], ["回来", "hui2lai2", "trở về (đây)"], ["回去", "hui2qu4", "trở về (đó)"], ["机场", "ji1chang3", "sân bay"], ["机票", "ji1piao4", "vé máy bay"], ["记得", "ji4de", "nhớ"], ["间", "jian1", "gian, phòng (lượng từ cho phòng)"], ["教", "jiao1", "dạy"], ["教室", "jiao4shi4", "phòng học"], ["接", "jie1", "đón; nghe (điện thoại)"], ["介绍", "jie4shao4", "giới thiệu"], ["进", "jin4", "vào"], ["进来", "jin4lai2", "vào đây"], ["进去", "jin4qu4", "đi vào"], ["近", "jin4", "gần"], ["经常", "jing1chang2", "thường xuyên"], ["酒店", "jiu3dian4", "khách sạn"], ["就", "jiu4", "thì, liền, ngay"], ["咖啡", "ka1fei1", "cà phê"], ["开始", "kai1shi3", "bắt đầu"], ["开学", "kai1xue2", "khai giảng"], ["考", "kao3", "thi"], ["考试", "kao3shi4", "kỳ thi; thi"], ["可能", "ken3eng2", "có thể, có lẽ"], ["裤子", "ku4zi", "quần"], ["快", "kuai4", "nhanh"], ["快乐", "kuai4le4", "vui vẻ"], ["快要", "kuai4yao4", "sắp"], ["篮球", "lan2qiu2", "bóng rổ"], ["累", "lei4", "mệt"], ["离", "li2", "cách; rời"], ["礼物", "li3wu4", "quà"], ["里面", "li3mian4", "bên trong"], ["楼", "lou2", "tầng; tòa nhà"], ["路", "lu4", "đường"], ["路上", "lu4shang", "trên đường"], ["旅游", "lv3you2", "du lịch"], ["绿色", "lv4se4", "màu xanh lá"], ["慢", "man4", "chậm"], ["没意思", "mei2yi4si", "chán, không thú vị"], ["每", "mei3", "mỗi"], ["门", "men2", "cửa"], ["门口", "men2kou3", "cổng, trước cửa"], ["门票", "men2piao4", "vé vào cửa"], ["面", "mian4", "mì; mặt"], ["名", "ming2", "tên; danh"], ["拿", "na2", "cầm, lấy"], ["那", "na4", "đó, kia"], ["那么", "na4me", "như vậy, thế"], ["那样", "na4yang4", "như vậy, như thế"], ["奶茶", "nai3cha2", "trà sữa"], ["奶奶", "nai3nai", "bà nội"], ["男孩儿", "nan2hair2", "bé trai"], ["鸟", "niao3", "chim"], ["女孩儿", "nv3hair2", "bé gái"], ["旁边", "pang2bian1", "bên cạnh"], ["跑", "pao3", "chạy"], ["跑步", "pao3bu4", "chạy bộ"], ["票", "piao4", "vé"], ["妻子", "qi1zi", "vợ"], ["前面", "qian2mian4", "phía trước"], ["晴", "qing2", "trời nắng, trời quang"], ["球", "qiu2", "quả bóng; bóng"], ["让", "rang4", "để, bảo; nhường"], ["肉", "rou4", "thịt"], ["商场", "shang1chang3", "trung tâm thương mại"], ["上来", "shang4lai2", "đi lên (đây)"], ["上面", "shang4mian4", "phía trên"], ["上去", "shang4qu4", "đi lên (đó)"], ["上网", "shang4wang3", "lên mạng"], ["身体", "shen1ti3", "cơ thể; sức khỏe"], ["生日", "shengr1i4", "sinh nhật"], ["时", "shi2", "lúc, khi"], ["事情", "shi4qing", "sự việc, chuyện"], ["试", "shi4", "thử"], ["手", "shou3", "tay"], ["手表", "shou3biao3", "đồng hồ đeo tay"], ["书包", "shu1bao1", "cặp sách"], ["舒服", "shu1fu", "dễ chịu, thoải mái"], ["送", "song4", "tặng; tiễn"], ["虽然", "suir1an2", "tuy rằng"], ["所以", "suo3yi3", "cho nên"], ["疼", "teng2", "đau"], ["踢", "ti1", "đá"], ["题", "ti2", "câu hỏi, bài tập"], ["条", "tiao2", "lượng từ cho vật dài (quần, cá, đường...)"], ["跳舞", "tiao4wu3", "nhảy múa, khiêu vũ"], ["头", "tou2", "đầu"], ["外国", "wai4guo2", "nước ngoài"], ["外面", "wai4mian4", "bên ngoài"], ["完", "wan2", "xong, hết"], ["万", "wan4", "vạn, mười nghìn"], ["网上", "wang3shang", "trên mạng"], ["往", "wang3", "hướng về, về phía"], ["忘", "wang4", "quên"], ["为什么", "wei4shen2me", "tại sao"], ["位", "wei4", "vị (lượng từ lịch sự cho người)"], ["希望", "xi1wang4", "hy vọng"], ["洗", "xi3", "rửa, giặt"], ["洗手间", "xi3shou3jian1", "nhà vệ sinh"], ["下来", "xia4lai2", "đi xuống (đây)"], ["下面", "xia4mian", "phía dưới"], ["下去", "xia4qu4", "đi xuống (đó)"], ["小孩儿", "xiao3hair2", "trẻ con"], ["小时候", "xiao3shi2hou", "hồi nhỏ"], ["笑", "xiao4", "cười"], ["新年", "xin1nian2", "năm mới"], ["姓", "xing4", "họ; mang họ"], ["姓名", "xing4ming2", "họ tên"], ["颜色", "yan2se4", "màu sắc"], ["眼睛", "yan3jing", "mắt"], ["药", "yao4", "thuốc"], ["药店", "yao4dian4", "hiệu thuốc"], ["爷爷", "ye2ye", "ông nội"], ["一会儿", "yi2huir4", "một lát, lát nữa"], ["一起", "yi4qi3", "cùng nhau"], ["已经", "yi3jing1", "đã"], ["意思", "yi4si", "ý nghĩa, ý"], ["因为", "yin1wei4", "bởi vì"], ["阴", "yin1", "âm u, nhiều mây"], ["游", "you2", "bơi; đi chơi"], ["游泳", "you2yong3", "bơi lội"], ["有时", "you3shi2", "đôi khi"], ["有意思", "you3yi4si", "thú vị"], ["右", "you4", "phải"], ["右边", "you4bian", "bên phải"], ["鱼", "yu2", "cá"], ["远", "yuan3", "xa"], ["运动", "yun4dong4", "vận động, thể thao"], ["站", "zhan4", "ga, trạm; đứng"], ["丈夫", "zhang4fu", "chồng"], ["这么", "zhe4me", "như thế này"], ["这样", "zhe4yang4", "như vậy, như thế này"], ["着", "zhe", "trợ từ chỉ trạng thái tiếp diễn"], ["正", "zheng4", "đang"], ["周", "zhou1", "tuần"], ["准备", "zhun3bei4", "chuẩn bị"], ["自己", "zi4ji3", "tự mình, bản thân"], ["走", "zou3", "đi"], ["走路", "zou3lu4", "đi bộ"], ["足球", "zu2qiu2", "bóng đá"], ["最", "zui4", "nhất"], ["左", "zuo3", "trái"], ["左边", "zuo3bian", "bên trái"], ["北京烤鸭", "bei3jing1kao3ya1", "vịt quay Bắc Kinh"], ["北京大学", "bei3jing1da4xue2", "Đại học Bắc Kinh"], ["颐和园", "yi2he2yuan2", "Di Hòa Viên (Cung điện Mùa hè)"]];
+const SIZE=10, N=Math.ceil(DATA.length/SIZE);
+let ORDER=DATA,mode="alpha",sec=0,items=[],firstTry=0,totalChecked=0;
+const $=id=>document.getElementById(id);
+const canon=s=>s.toLowerCase().replace(/ü|u:/g,'v').replace(/[\s'’\-.]/g,'').replace(/(\d)r/g,'r$1').replace(/[05]/g,'');
+const expCanon=s=>s.replace(/(\d)r/g,'r$1');
+function show(){
+  const part=ORDER.slice(sec*SIZE,sec*SIZE+SIZE);
+  items=part.map((d,i)=>({d,i,done:false,tries:0}));
+  $('sec').textContent=`Section ${sec+1} of ${N} · ${mode==='random'?'Random':'Alphabetical'}`;
+  $('bar').style.width=(sec/N*100)+'%';
+  $('list').innerHTML=items.map((it,i)=>`<div class="row" id="r${i}"><span class="n">${sec*SIZE+i+1}</span><span class="hz">${it.d[0]}</span><span class="vi">${it.d[2]}</span><input id="i${i}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="pinyin + tones"><div class="ans" id="a${i}" hidden></div></div>`).join('');
+  items.forEach((it,i)=>$('i'+i).addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();const nx=items.slice(i+1).find(x=>!x.done);nx?$('i'+nx.i).focus():check()}}));
+  $('check').hidden=false;$('next').hidden=true;$('msg').textContent='';$('msg').className='msg';upd();$('i0').focus();
+}
+function upd(){$('cnt').textContent=`${items.filter(x=>x.done).length} / ${items.length} correct`}
+function check(){
+  let wrong=0,firstWrong=null;
+  items.forEach(it=>{
+    if(it.done)return;
+    const inp=$('i'+it.i),row=$('r'+it.i),a=$('a'+it.i);
+    if(!inp.value.trim()){wrong++;row.className='row bad';firstWrong??=it;return}
+    it.tries++;
+    if(canon(inp.value)===expCanon(it.d[1])){
+      it.done=true;row.className='row ok';inp.disabled=true;a.hidden=true;
+      totalChecked++;if(it.tries===1)firstTry++;
+    }else{
+      wrong++;row.className='row bad';firstWrong??=it;
+      if(it.tries>=2){a.hidden=false;a.innerHTML=a.dataset.s?a.innerHTML:'<button class="show" type="button">Show answer</button>';
+        const b=a.querySelector('.show');if(b)b.onclick=()=>{a.dataset.s=1;a.textContent='Answer: '+it.d[1].replace('v','ü')+' — now type it yourself'}}
+    }
+  });
+  upd();
+  const m=$('msg');
+  if(!wrong){m.className='msg ok';m.textContent='All correct! 🎉';$('check').hidden=true;$('next').hidden=false;$('next').textContent=sec===N-1?'Finish':'Next section →';$('bar').style.width=((sec+1)/N*100)+'%';$('next').focus()}
+  else{m.className='msg bad';m.textContent=`${wrong} to redo — fix the red ones and check again.`;$('check').textContent='Check again';if(firstWrong)$('i'+firstWrong.i).focus()}
+}
+$('check').onclick=check;
+$('next').onclick=()=>{$('check').textContent='Check answers';sec++;sec<N?(show(),window.scrollTo(0,0)):finish()};
+function finish(){
+  ['list','check','next','msg'].forEach(i=>$(i).hidden=true);document.querySelector('.actions').hidden=true;
+  $('end').hidden=false;$('cnt').textContent='';$('sec').textContent='Complete';$('bar').style.width='100%';
+  $('end').innerHTML=`<h2>恭喜! You finished all ${DATA.length} words.</h2><p>Correct on the first try: <b>${firstTry}</b> / ${totalChecked} (${Math.round(firstTry/totalChecked*100)}%)</p><button class="p" onclick="home()">Practice again</button>`;
+}
+function begin(m){
+  mode=m;ORDER=DATA.slice();
+  if(m==='random')for(let i=ORDER.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ORDER[i],ORDER[j]]=[ORDER[j],ORDER[i]]}
+  sec=0;firstTry=0;totalChecked=0;
+  ['list','msg'].forEach(i=>$(i).hidden=false);document.querySelector('.actions').hidden=false;
+  $('end').hidden=true;$('check').textContent='Check answers';
+  $('start').hidden=true;$('practice').hidden=false;show();
+}
+function home(){$('practice').hidden=true;$('start').hidden=false;window.scrollTo(0,0)}
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>begin(b.dataset.mode));
+</script></body></html>
